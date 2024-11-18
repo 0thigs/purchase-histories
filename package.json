@@ -1,20 +1,22 @@
 {
-  "name": "turborepo-empty-starter",
+  "name": "purchase-history",
   "version": "1.0.0",
   "private": true,
-  "description": "An empty Turborepo starter",
-  "main": "index.js",
   "scripts": {
-    "build": "turbo build",
-    "lint": "turbo lint",
-    "dev": "turbo dev"
+    "dev": "turbo run dev --filter=packages/*",
+    "build": "turbo run build --filter=packages/*",
+    "lint": "turbo run lint --filter=packages/*"
   },
-  "keywords": [],
-  "author": "tknickman",
-  "license": "ISC",
-  "packageManager": "npm@10.8.3",
   "workspaces": [
-    "apps/*",
     "packages/*"
-  ]
+  ],
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "concurrently": "^7.0.0",
+    "turbo": "^2.3.0"
+  },
+  "packageManager": "npm@10.8.3",
+  "dependencies": {
+    "next": "^15.0.3"
+  }
 }
