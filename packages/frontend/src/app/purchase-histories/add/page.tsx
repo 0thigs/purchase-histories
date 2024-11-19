@@ -1,7 +1,8 @@
 // pages/purchase-histories/add.tsx
+"use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 interface Product {
   id: number;

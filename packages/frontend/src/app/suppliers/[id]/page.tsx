@@ -1,12 +1,36 @@
-// pages/suppliers/add.tsx
+// pages/suppliers/[id].tsx
+"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
-const AddSupplier: React.FC = () => {
+interface Supplier {
+  id: number;
+  name: string;
+  contact: string;
+}
+
+const EditSupplier: React.FC = () => {
   const router = useRouter();
+  const { id } = router.query;
+  const [supplier, setSupplier] = useState<Supplier | null>(null);
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
+
+  useEffect(() => {
+    if (id) {
+      fetch(`/api/suppliers/${id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setSupplier(data);
+          setName(data.name);
+          setContact(data.contact);
+        })
+        .catch(() => {
+          alert("Failed to fetch supplier.");
+        });
+    }
+  }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,8 +39,8 @@ const AddSupplier: React.FC = () => {
       return;
     }
 
-    await fetch("/api/suppliers", {
-      method: "POST",
+    await fetch(`/api/suppliers/${id}`, {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, contact }),
     });
@@ -24,9 +48,13 @@ const AddSupplier: React.FC = () => {
     router.push("/suppliers");
   };
 
+  if (!supplier) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Add Supplier</h1>
+      <h1 className="text-2xl font-bold mb-4">Edit Supplier</h1>
       <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
         <div>
           <label className="block">Name:</label>
@@ -52,11 +80,11 @@ const AddSupplier: React.FC = () => {
           type="submit"
           className="bg-green-500 text-white px-4 py-2 rounded"
         >
-          Add Supplier
+          Update Supplier
         </button>
       </form>
     </div>
   );
 };
 
-export default AddSupplier;
+export default EditSupplier;

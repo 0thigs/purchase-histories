@@ -1,38 +1,14 @@
-// pages/products/[id].tsx
+// pages/products/add.tsx
+"use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-interface Product {
-  id: number;
-  name: string;
-  description?: string;
-  price: number;
-}
-
-const EditProduct: React.FC = () => {
+const AddProduct: React.FC = () => {
   const router = useRouter();
-  const { id } = router.query;
-  const [product, setProduct] = useState<Product | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number | "">("");
-
-  useEffect(() => {
-    if (id) {
-      fetch(`/api/products/${id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setProduct(data);
-          setName(data.name);
-          setDescription(data.description || "");
-          setPrice(data.price);
-        })
-        .catch(() => {
-          alert("Failed to fetch product.");
-        });
-    }
-  }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,22 +17,28 @@ const EditProduct: React.FC = () => {
       return;
     }
 
-    await fetch(`/api/products/${id}`, {
-      method: "PUT",
+    console.log("Submitting form");
+
+    await fetch("/api/products", {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, description, price }),
     });
 
+    console.log("Product added successfully");
+
+    const response = await fetch("/api/products", {
+      method: "GET",
+    });
+
+    console.log("Response:", response);
+
     router.push("/products");
   };
 
-  if (!product) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Edit Product</h1>
+      <h1 className="text-2xl font-bold mb-4">Add Product</h1>
       <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
         <div>
           <label className="block">Name:</label>
@@ -91,11 +73,11 @@ const EditProduct: React.FC = () => {
           type="submit"
           className="bg-green-500 text-white px-4 py-2 rounded"
         >
-          Update Product
+          Add Product
         </button>
       </form>
     </div>
   );
 };
 
-export default EditProduct;
+export default AddProduct;

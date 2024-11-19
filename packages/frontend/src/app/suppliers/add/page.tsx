@@ -1,35 +1,13 @@
-// pages/suppliers/[id].tsx
+// pages/suppliers/add.tsx
+"use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-interface Supplier {
-  id: number;
-  name: string;
-  contact: string;
-}
-
-const EditSupplier: React.FC = () => {
+const AddSupplier: React.FC = () => {
   const router = useRouter();
-  const { id } = router.query;
-  const [supplier, setSupplier] = useState<Supplier | null>(null);
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
-
-  useEffect(() => {
-    if (id) {
-      fetch(`/api/suppliers/${id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setSupplier(data);
-          setName(data.name);
-          setContact(data.contact);
-        })
-        .catch(() => {
-          alert("Failed to fetch supplier.");
-        });
-    }
-  }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,8 +16,8 @@ const EditSupplier: React.FC = () => {
       return;
     }
 
-    await fetch(`/api/suppliers/${id}`, {
-      method: "PUT",
+    await fetch("/api/suppliers", {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, contact }),
     });
@@ -47,13 +25,9 @@ const EditSupplier: React.FC = () => {
     router.push("/suppliers");
   };
 
-  if (!supplier) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Edit Supplier</h1>
+      <h1 className="text-2xl font-bold mb-4">Add Supplier</h1>
       <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
         <div>
           <label className="block">Name:</label>
@@ -79,11 +53,11 @@ const EditSupplier: React.FC = () => {
           type="submit"
           className="bg-green-500 text-white px-4 py-2 rounded"
         >
-          Update Supplier
+          Add Supplier
         </button>
       </form>
     </div>
   );
 };
 
-export default EditSupplier;
+export default AddSupplier;

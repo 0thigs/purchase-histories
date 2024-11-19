@@ -1,13 +1,39 @@
-// pages/products/add.tsx
+// pages/products/[id].tsx
+"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
-const AddProduct: React.FC = () => {
+interface Product {
+  id: number;
+  name: string;
+  description?: string;
+  price: number;
+}
+
+const EditProduct: React.FC = () => {
   const router = useRouter();
+  const { id } = router.query;
+  const [product, setProduct] = useState<Product | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number | "">("");
+
+  useEffect(() => {
+    if (id) {
+      fetch(`/api/products/${id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setProduct(data);
+          setName(data.name);
+          setDescription(data.description || "");
+          setPrice(data.price);
+        })
+        .catch(() => {
+          alert("Failed to fetch product.");
+        });
+    }
+  }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,8 +42,8 @@ const AddProduct: React.FC = () => {
       return;
     }
 
-    await fetch("/api/products", {
-      method: "POST",
+    await fetch(`/api/products/${id}`, {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, description, price }),
     });
@@ -25,9 +51,13 @@ const AddProduct: React.FC = () => {
     router.push("/products");
   };
 
+  if (!product) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Add Product</h1>
+      <h1 className="text-2xl font-bold mb-4">Edit Product</h1>
       <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
         <div>
           <label className="block">Name:</label>
@@ -62,11 +92,11 @@ const AddProduct: React.FC = () => {
           type="submit"
           className="bg-green-500 text-white px-4 py-2 rounded"
         >
-          Add Product
+          Update Product
         </button>
       </form>
     </div>
   );
 };
 
-export default AddProduct;
+export default EditProduct;
