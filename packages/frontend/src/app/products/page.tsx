@@ -9,10 +9,17 @@ interface Product {
   name: string;
   description?: string;
   price: number;
+  supplier: Supplier;
+}
+
+interface Supplier {
+  id: number;
+  name: string;
 }
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
   const fetchProducts = async () => {
     const res = await fetch("/api/products");
@@ -28,6 +35,7 @@ const Products: React.FC = () => {
     if (confirm("Are you sure you want to delete this product?")) {
       await fetch(`/api/products/${id}`, {
         method: "DELETE",
+        body: "",
       });
       fetchProducts();
     }
@@ -51,6 +59,7 @@ const Products: React.FC = () => {
             <th className="py-2 px-4 border">Name</th>
             <th className="py-2 px-4 border">Description</th>
             <th className="py-2 px-4 border">Price</th>
+            <th className="py-2 px-4 border">Supplier</th>
             <th className="py-2 px-4 border">Actions</th>
           </tr>
         </thead>
@@ -61,6 +70,7 @@ const Products: React.FC = () => {
               <td className="py-2 px-4 border">{product.name}</td>
               <td className="py-2 px-4 border">{product.description || "-"}</td>
               <td className="py-2 px-4 border">${product.price.toFixed(2)}</td>
+              <td className="py-2 px-4 border">{product.supplier.name}</td>
               <td className="py-2 px-4 border">
                 <Link
                   href={`/products/${product.id}`}

@@ -1,23 +1,31 @@
 // pages/products/[id].tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useState, useEffect, use } from "react";
+import { useRouter } from "next/navigation";
 
 interface Product {
   id: number;
   name: string;
   description?: string;
   price: number;
+  supplier: Supplier;
 }
 
-const EditProduct: React.FC = () => {
+interface Supplier {
+  id: number;
+  name: string;
+}
+
+const EditProduct = ({ params }: { params: Promise<{ id: string }> }) => {
   const router = useRouter();
-  const { id } = router.query;
+  const { id } = use(params);
   const [product, setProduct] = useState<Product | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number | "">("");
+  const [supplierId, setSupplierId] = useState<number | "">("");
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
   useEffect(() => {
     if (id) {
@@ -28,6 +36,7 @@ const EditProduct: React.FC = () => {
           setName(data.name);
           setDescription(data.description || "");
           setPrice(data.price);
+          setSupplierId(data.supplier.id);
         })
         .catch(() => {
           alert("Failed to fetch product.");
@@ -45,11 +54,21 @@ const EditProduct: React.FC = () => {
     await fetch(`/api/products/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, description, price }),
+      body: JSON.stringify({ name, description, price, supplierId }),
     });
 
     router.push("/products");
   };
+
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      const res = await fetch("/api/suppliers");
+      const data = await res.json();
+      setSuppliers(data);
+    };
+
+    fetchSuppliers();
+  }, []);
 
   if (!product) {
     return <div>Loading...</div>;
@@ -87,6 +106,22 @@ const EditProduct: React.FC = () => {
             className="border p-2 w-full"
             required
           />
+        </div>
+        <div>
+          <label className="block">Supplier:</label>
+          <select
+            value={supplierId.toString()}
+            onChange={(e) => setSupplierId(parseInt(e.target.value))}
+            className="border p-2 w-full"
+            required
+          >
+            <option value="">Select a supplier</option>
+            {suppliers.map((supplier) => (
+              <option key={supplier.id} value={supplier.id}>
+                {supplier.name}
+              </option>
+            ))}
+          </select>
         </div>
         <button
           type="submit"

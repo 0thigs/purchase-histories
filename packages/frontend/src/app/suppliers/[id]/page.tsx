@@ -1,8 +1,8 @@
 // pages/suppliers/[id].tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useState, useEffect, use } from "react";
+import { useRouter } from "next/navigation";
 
 interface Supplier {
   id: number;
@@ -10,9 +10,9 @@ interface Supplier {
   contact: string;
 }
 
-const EditSupplier: React.FC = () => {
+const EditSupplier = ({ params }: { params: Promise<{ id: string }> }) => {
   const router = useRouter();
-  const { id } = router.query;
+  const { id } = use(params);
   const [supplier, setSupplier] = useState<Supplier | null>(null);
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");

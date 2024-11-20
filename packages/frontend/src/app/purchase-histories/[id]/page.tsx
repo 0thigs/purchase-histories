@@ -1,8 +1,8 @@
 // pages/purchase-histories/[id].tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useState, useEffect, use } from "react";
+import { useRouter } from "next/navigation";
 
 interface Product {
   id: number;
@@ -22,9 +22,13 @@ interface PurchaseHistory {
   supplierId: number;
 }
 
-const EditPurchaseHistory: React.FC = () => {
+const EditPurchaseHistory = ({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) => {
   const router = useRouter();
-  const { id } = router.query;
+  const { id } = use(params);
   const [purchaseHistory, setPurchaseHistory] =
     useState<PurchaseHistory | null>(null);
   const [purchaseDate, setPurchaseDate] = useState("");
@@ -32,7 +36,6 @@ const EditPurchaseHistory: React.FC = () => {
   const [productId, setProductId] = useState<number | "">("");
   const [supplierId, setSupplierId] = useState<number | "">("");
   const [products, setProducts] = useState<Product[]>([]);
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
   useEffect(() => {
     if (id) {
@@ -52,26 +55,14 @@ const EditPurchaseHistory: React.FC = () => {
         setProducts(data);
       };
 
-      const fetchSuppliers = async () => {
-        const res = await fetch("/api/suppliers");
-        const data = await res.json();
-        setSuppliers(data);
-      };
-
       fetchPurchaseHistory();
       fetchProducts();
-      fetchSuppliers();
     }
   }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      purchaseDate.trim() === "" ||
-      quantity === "" ||
-      productId === "" ||
-      supplierId === ""
-    ) {
+    if (purchaseDate.trim() === "" || quantity === "" || productId === "") {
       alert("All fields are required.");
       return;
     }
@@ -130,22 +121,6 @@ const EditPurchaseHistory: React.FC = () => {
             {products.map((product) => (
               <option key={product.id} value={product.id}>
                 {product.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block">Supplier:</label>
-          <select
-            value={supplierId}
-            onChange={(e) => setSupplierId(parseInt(e.target.value))}
-            className="border p-2 w-full"
-            required
-          >
-            <option value="">Select a supplier</option>
-            {suppliers.map((supplier) => (
-              <option key={supplier.id} value={supplier.id}>
-                {supplier.name}
               </option>
             ))}
           </select>

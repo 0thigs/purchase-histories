@@ -1,14 +1,21 @@
 // pages/products/add.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
+interface Supplier {
+  id: number;
+  name: string;
+}
 
 const AddProduct: React.FC = () => {
   const router = useRouter();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number | "">("");
+  const [supplierId, setSupplierId] = useState<number | "">("");
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +29,7 @@ const AddProduct: React.FC = () => {
     await fetch("/api/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, description, price }),
+      body: JSON.stringify({ name, description, price, supplierId }),
     });
 
     console.log("Product added successfully");
@@ -35,6 +42,16 @@ const AddProduct: React.FC = () => {
 
     router.push("/products");
   };
+
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      const res = await fetch("/api/suppliers");
+      const data = await res.json();
+      setSuppliers(data);
+    };
+
+    fetchSuppliers();
+  }, []);
 
   return (
     <div>
@@ -63,11 +80,27 @@ const AddProduct: React.FC = () => {
           <input
             type="number"
             step="0.01"
-            value={price}
+            value={price.toString()}
             onChange={(e) => setPrice(parseFloat(e.target.value))}
             className="border p-2 w-full"
             required
           />
+        </div>
+        <div>
+          <label className="block">Supplier:</label>
+          <select
+            value={supplierId.toString()}
+            onChange={(e) => setSupplierId(parseInt(e.target.value))}
+            className="border p-2 w-full"
+            required
+          >
+            <option value="">Select a supplier</option>
+            {suppliers.map((supplier) => (
+              <option key={supplier.id} value={supplier.id}>
+                {supplier.name}
+              </option>
+            ))}
+          </select>
         </div>
         <button
           type="submit"

@@ -9,17 +9,11 @@ interface Product {
   name: string;
 }
 
-interface Supplier {
-  id: number;
-  name: string;
-}
-
 interface PurchaseHistory {
   id: number;
   purchaseDate: string;
   quantity: number;
   product: Product;
-  supplier: Supplier;
 }
 
 const PurchaseHistories: React.FC = () => {
@@ -62,7 +56,6 @@ const PurchaseHistories: React.FC = () => {
             <th className="py-2 px-4 border">Purchase Date</th>
             <th className="py-2 px-4 border">Quantity</th>
             <th className="py-2 px-4 border">Product</th>
-            <th className="py-2 px-4 border">Supplier</th>
             <th className="py-2 px-4 border">Actions</th>
           </tr>
         </thead>
@@ -75,7 +68,6 @@ const PurchaseHistories: React.FC = () => {
               </td>
               <td className="py-2 px-4 border">{history.quantity}</td>
               <td className="py-2 px-4 border">{history.product.name}</td>
-              <td className="py-2 px-4 border">{history.supplier.name}</td>
               <td className="py-2 px-4 border">
                 <Link
                   href={`/purchase-histories/${history.id}`}

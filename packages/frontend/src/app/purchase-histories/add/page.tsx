@@ -19,9 +19,7 @@ const AddPurchaseHistory: React.FC = () => {
   const [purchaseDate, setPurchaseDate] = useState("");
   const [quantity, setQuantity] = useState<number | "">("");
   const [productId, setProductId] = useState<number | "">("");
-  const [supplierId, setSupplierId] = useState<number | "">("");
   const [products, setProducts] = useState<Product[]>([]);
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -30,24 +28,12 @@ const AddPurchaseHistory: React.FC = () => {
       setProducts(data);
     };
 
-    const fetchSuppliers = async () => {
-      const res = await fetch("/api/suppliers");
-      const data = await res.json();
-      setSuppliers(data);
-    };
-
     fetchProducts();
-    fetchSuppliers();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      purchaseDate.trim() === "" ||
-      quantity === "" ||
-      productId === "" ||
-      supplierId === ""
-    ) {
+    if (purchaseDate.trim() === "" || quantity === "" || productId === "") {
       alert("All fields are required.");
       return;
     }
@@ -59,7 +45,6 @@ const AddPurchaseHistory: React.FC = () => {
         purchaseDate,
         quantity,
         productId,
-        supplierId,
       }),
     });
 
@@ -102,22 +87,6 @@ const AddPurchaseHistory: React.FC = () => {
             {products.map((product) => (
               <option key={product.id} value={product.id}>
                 {product.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block">Supplier:</label>
-          <select
-            value={supplierId}
-            onChange={(e) => setSupplierId(parseInt(e.target.value))}
-            className="border p-2 w-full"
-            required
-          >
-            <option value="">Select a supplier</option>
-            {suppliers.map((supplier) => (
-              <option key={supplier.id} value={supplier.id}>
-                {supplier.name}
               </option>
             ))}
           </select>

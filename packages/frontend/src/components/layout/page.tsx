@@ -4,6 +4,7 @@
 import React from "react";
 import Navbar from "../navbar/page";
 import { ReactNode } from "react";
+import "../../styles/globals.css";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
@@ -13,7 +14,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
           <Navbar />
           <main className="flex-grow container mx-auto p-4">{children}</main>
           <footer className="bg-gray-800 text-white text-center p-4">
-          &copy; {new Date().getFullYear()} Purchase History App
+            &copy; {new Date().getFullYear()} Purchase History App
           </footer>
         </div>
       </body>
