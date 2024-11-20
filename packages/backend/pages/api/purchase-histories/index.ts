@@ -9,19 +9,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const histories = await prisma.purchaseHistory.findMany({
         include: {
           product: true,
-          supplier: true,
         },
       });
       res.status(200).json(histories);
       break;
     case 'POST':
-      const { purchaseDate, quantity, productId, supplierId } = req.body;
+      const { purchaseDate, quantity, productId } = req.body;
       const newHistory = await prisma.purchaseHistory.create({
         data: {
           purchaseDate: new Date(purchaseDate),
           quantity,
           productId,
-          supplierId,
         },
       });
       res.status(201).json(newHistory);
