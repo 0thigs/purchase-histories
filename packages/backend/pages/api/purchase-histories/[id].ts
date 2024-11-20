@@ -15,7 +15,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         where: { id: historyId },
         include: {
           product: true,
-          supplier: true,
         },
       });
       if (history) {
@@ -25,14 +24,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       break;
     case 'PUT':
-      const { purchaseDate, quantity, productId, supplierId } = req.body;
+      const { purchaseDate, quantity, productId } = req.body;
       const updated = await prisma.purchaseHistory.update({
         where: { id: historyId },
         data: {
           purchaseDate: new Date(purchaseDate),
           quantity,
           productId,
-          supplierId,
         },
       });
       res.status(200).json(updated);

@@ -18,6 +18,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       try {
         const product = await prisma.product.findUnique({
           where: { id: productId },
+          include: {
+            supplier: true,
+          },
         });
         if (product) {
           res.status(200).json(product);
@@ -30,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       break;
     case 'PUT':
       try {
-        const { name, description, price } = req.body;
+        const { name, description, price, supplierId } = req.body;
         if (!name || price === undefined) {
           return res.status(400).json({ error: 'Name and price are required' });
         }
@@ -40,6 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             name,
             description,
             price,
+            supplierId
           },
         });
         res.status(200).json(updatedProduct);
@@ -56,8 +60,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         await prisma.product.delete({
           where: { id: productId },
         });
-        res.status(204).end();
+        res.status(200).json({});
       } catch (error) {
+        console.error(error);
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
           res.status(404).json({ error: 'Product not found' });
         } else {
