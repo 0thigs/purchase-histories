@@ -1,12 +1,11 @@
 {
-  "pipeline": {
+  "tasks": {
     "dev": {
-      "dependsOn": [],
-      "parallel": true
+      "cache": false,
+      "persistent": true
     },
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "dependsOn": ["^build"]
     },
     "lint": {
       "outputs": []
